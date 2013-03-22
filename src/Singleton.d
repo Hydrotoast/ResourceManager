@@ -1,0 +1,1 @@
+Singleton.o: Singleton.h

@@ -1,0 +1,4 @@
+Resource Manager
+================
+
+A C++ wrapper for manging resource limitations and usage on Linux.
