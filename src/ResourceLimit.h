@@ -32,5 +32,4 @@ private:
 	bool applied_;
 };
 
-
 #endif
