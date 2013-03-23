@@ -12,8 +12,8 @@ public:
 	ResourceLimit(int, rlimit&);
 
 	// accessors
-	rlim_t soft_limit() const;
-	rlim_t hard_limit() const;
+	rlim_t soft_limit() const noexcept;
+	rlim_t hard_limit() const noexcept;
 
 	// native accessors
 	const rlimit& to_rlimit() const;

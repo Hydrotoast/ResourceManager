@@ -1,9 +1,14 @@
 #include "ResourceLimit.h"
+#include "errno.h"
+#include <system_error>
+
+using namespace std;
 
 ResourceLimit::ResourceLimit(int resource_id) :
 	resource_id_(resource_id), applied_(false)
 {
-	getrlimit(resource_id, &limit_);
+	if (getrlimit(resource_id, &limit_) == -1)
+		throw system_error(errno, system_category());
 }
 
 ResourceLimit::ResourceLimit(int resource_id, rlim_t soft_limit, rlim_t hard_limit) :
@@ -16,24 +21,26 @@ ResourceLimit::ResourceLimit(int resource_id, rlim_t soft_limit, rlim_t hard_lim
 ResourceLimit::ResourceLimit(int resource_id, rlimit& limit) :
 	resource_id_(resource_id), limit_(limit), applied_(false) {}
 
-rlim_t ResourceLimit::soft_limit() const
+rlim_t ResourceLimit::soft_limit() const noexcept
 {
 	return limit_.rlim_cur;
 }
 
-rlim_t ResourceLimit::hard_limit() const
+rlim_t ResourceLimit::hard_limit() const noexcept
 {
 	return limit_.rlim_max;
 }
 
 void ResourceLimit::get_limit()
 {
-	getrlimit(resource_id_, &limit_);
+	if (getrlimit(resource_id_, &limit_) == -1)
+		throw system_error(errno, system_category());
 }
 
 void ResourceLimit::apply()
 {
-	setrlimit(resource_id_, &limit_);
+	if (setrlimit(resource_id_, &limit_) == -1)
+		throw system_error(errno, system_category());
 	applied_ = true;
 }
 

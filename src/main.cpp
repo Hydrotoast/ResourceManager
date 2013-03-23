@@ -1,4 +1,5 @@
 #include <iostream>
+#include <system_error>
 
 #include "ResourceManager.h"
 
@@ -17,12 +18,20 @@ int fib(int n)
 int main(int argc, char* argv[])
 {
 	ResourceManager& manager = ResourceManager::instance();
-	manager.set_resource_limit(ResourceLimit(RLIMIT_CPU, 3, 3));
-	manager.set_resource_limit(ResourceLimit(RLIMIT_RTTIME, 3, 3));
-	manager.apply_limits();
 
+	try {
+		// Set and apply resource limits
+		manager.set_resource_limit(ResourceLimit(RLIMIT_CPU, 3, 3));
+		manager.set_resource_limit(ResourceLimit(RLIMIT_RTTIME, 3, 3));
+		manager.apply_limits();
+	} catch (const system_error& err) {
+		cerr << "Error (" << err.code() << "): " << err.code().message() << endl;
+	}
+
+	// Compute
 	fib(31);
 
+	// Print resource usage
 	ResourceUsage usage = manager.get_resource_usage(RUSAGE_SELF);
 
 	cout << "User Time (sec): " << usage.utime().seconds << endl;

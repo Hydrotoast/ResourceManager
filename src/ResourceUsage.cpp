@@ -1,8 +1,13 @@
 #include "ResourceUsage.h"
+#include "errno.h"
+#include <system_error>
+
+using namespace std;
 
 ResourceUsage::ResourceUsage(int who) : who_(who)
 {
-	getrusage(who, &usage_);
+	if (getrusage(who, &usage_))
+		throw system_error(errno, system_category());
 }
 
 TimeParts ResourceUsage::utime() const { return TimeParts(usage_.ru_utime); }
